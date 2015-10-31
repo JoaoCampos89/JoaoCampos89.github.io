@@ -12,13 +12,13 @@ safe: true
 # edit here to achieve your personal greatness
 url: http://JoaoCampos89.github.io/
 baseurl: /
-title: João Campos	
+title: João Campos
 author: Joao Campos
 description: Personal blog and resume
 avatar: profile.png
 email: j.campos893@gmail.com
 github: JoaoCampos89
-# twitter: chrisstturner
-# linkedin: username
-# disqus: username
+ufcgUrl: http://www.ufcg.edu.br/
+linkedin: joaocampos89
+vitae:
 google_analytics: UA-69513336-1
