@@ -1,0 +1,430 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Phasor estimation example</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-04"><meta name="DC.source" content="phasorEstimationExample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Phasor estimation example</h1><!--introduction--><p>In this example, the current phasor estimation is made with the FCDFT and HCDFT with and without Mimic Filter, and with Modified Cossine Filter. The main goal of this example is to show the DC exponential decay offset effect in the phasor estimators.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#4">Anti-Aliasing Filter</a></li><li><a href="#8">Sampling</a></li><li><a href="#21">Phasor Estimation</a></li><li><a href="#22">FCDFT</a></li><li><a href="#26">FCDFT with MIMIC filter</a></li><li><a href="#34">HCDFT</a></li><li><a href="#38">HCDFT with MIMIC filter</a></li><li><a href="#46">Phasor Estimation using Modified Cossine Filter</a></li></ul></div><p>Load file with simulated fault, which contains current and voltage signals.</p><pre class="codeinput">file = load(<span class="string">'SIMULATED_FAULT.dat'</span>);
+</pre><p>Phase A current - <img src="phasorEstimationExample_eq06066.png" alt="$I_a$"></p><pre class="codeinput">Ia = file(:,8);
+</pre><p>time vector</p><pre class="codeinput">t = file(:,2);
+</pre><h2>Anti-Aliasing Filter<a name="4"></a></h2><p>To avoid aliasing effect, an analog anti-aliasing filter is used. The analog filter used is the 2&ordm; order Butterworth with a 480 Hz cut-off frequency for a 960 Hz sampling frequency.</p><pre class="codeinput"><span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">% Filter Data</span>
+<span class="comment">% $f_c$ - cut-off frequency</span>
+fc = 480;
+order = 2;
+</pre><p>Filter project with normal frequency</p><pre class="codeinput">[zerosNorm,polesNorm,gainNorm] = buttap(order);
+[numNorm,denNorm] = zp2tf(zerosNorm,polesNorm,gainNorm);
+</pre><p>Readapt filter frequency</p><pre class="codeinput">[num,den] = lp2lp(numNorm,denNorm,2*pi*fc);
+</pre><p><img src="phasorEstimationExample_eq06066.png" alt="$I_a$"> filtered</p><pre class="codeinput">Ia = lsim(tf(num,den),Ia,t);
+</pre><h2>Sampling<a name="8"></a></h2><p>The sampling frequency chosen is 960 Hz, giving 16 samples per cycle</p><p>f - Fundamental frequency in Hz</p><pre class="codeinput">f = 60;
+</pre><p>Angular frequency in rad/s</p><pre class="codeinput">w = 2*pi*f;
+</pre><p>T - Fundamental period in s</p><pre class="codeinput">T  = 1/f;
+</pre><p>N - Samples per cycle</p><pre class="codeinput">N = 16;
+</pre><p><img src="phasorEstimationExample_eq45333.png" alt="$f_s$"> - Sampling frequency in Hz</p><pre class="codeinput">fs = N*f;
+</pre><p>discretization step in s</p><pre class="codeinput">dtd = 1/fs;
+</pre><p><img src="phasorEstimationExample_eq13548.png" alt="$N_{total}$"> - Total samples</p><pre class="codeinput">Ntotal = length(t);
+</pre><p>Step simulation in ms</p><pre class="codeinput">dt = 10e-6;
+</pre><pre>Obtaining the step reason dividing the required sampling frequency by
+the step simulation</pre><pre class="codeinput">p1 = round(dtd/dt);
+</pre><p>Discret current</p><pre class="codeinput">Ia = Ia(1:p1:Ntotal,1);
+</pre><p>Discrete time</p><pre class="codeinput">t  = t(1:p1:Ntotal);
+</pre><p>Ploting the current</p><pre class="codeinput">figure1 = figure(1);
+plot(Ia);
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_01.png" alt=""> <h2>Phasor Estimation<a name="21"></a></h2><p>For the phasor estimation, the sampled signal is windowing depending of the phasor estimator. For each window, the phasor estimation is computed along the signal length</p><h2>FCDFT<a name="22"></a></h2><p>Variables initialization</p><pre class="codeinput">Ntotal = length(Ia);
+P_FOURIER = ones(Ntotal,1);
+window = ones(N,1)*0.1;
+
+<span class="keyword">for</span> k=1:Ntotal
+</pre><p>Signal windowing</p><pre class="codeinput">    <span class="keyword">for</span> j=1:N-1
+        window(j) = window(j+1);
+    <span class="keyword">end</span>
+    window(N) = Ia(k);
+</pre><p>Computing the phasor</p><pre class="codeinput">    P_FOURIER(k)= FCDFT(window);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2>FCDFT with MIMIC filter<a name="26"></a></h2><p>Computing the digital mimic filter parameters for a time constant with 1 cycle</p><pre class="codeinput">cycles = 1;
+[K,taud] = mimicParameters(cycles);
+</pre><p>Applying mimic filter in the signal</p><p>Variables initialization</p><pre class="codeinput">Ntotal = length(Ia);
+P_FOURIER_MIMIC = ones(Ntotal,1);
+
+<span class="keyword">for</span> k=2:Ntotal
+</pre><p>Mimic Filter usage</p><pre class="codeinput">    P_FOURIER_MIMIC(k) = K*((1+taud)*P_FOURIER(k) - taud*P_FOURIER(k-1));
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p>Ploting signal with FCDFT</p><pre class="codeinput">figure2 = figure(2);
+
+plot(abs(P_FOURIER));
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_02.png" alt=""> <p>Ploting signal with FCDFT with mimic filter</p><pre class="codeinput">figure3 = figure(3);
+
+plot(abs(P_FOURIER_MIMIC));
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_03.png" alt=""> <h2>HCDFT<a name="34"></a></h2><pre class="codeinput">Ntotal = length(Ia);
+P_HFOURIER = ones(Ntotal,1);
+window = ones(N,1)*0.1;
+
+<span class="keyword">for</span> k=1:Ntotal
+</pre><p>Signal windowing</p><pre class="codeinput">    <span class="keyword">for</span> j=1:N-1
+        window(j) = window(j+1);
+    <span class="keyword">end</span>
+    window(N) = Ia(k);
+</pre><p>Computing the phasor</p><pre class="codeinput">    P_HFOURIER(k)= HCDFT(window);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><h2>HCDFT with MIMIC filter<a name="38"></a></h2><p>Computing the digital mimic filter parameters for a time constant with 1 cycle</p><pre class="codeinput">cycles = 1;
+[K,taud] = mimicParameters(cycles);
+</pre><p>Applying mimic filter in the signal</p><p>Variables initialization</p><pre class="codeinput">Ntotal = length(Ia);
+P_HFOURIER_MIMIC = ones(Ntotal,1);
+
+<span class="keyword">for</span> k = 2:Ntotal
+</pre><p>Mimic Filter usage</p><pre class="codeinput">    P_HFOURIER_MIMIC(k) = K*((1+taud)*P_HFOURIER(k) - taud*P_HFOURIER(k-1));
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p>Ploting signal with HCDFT</p><pre class="codeinput">figure4 = figure(4);
+
+plot(abs(P_HFOURIER));
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_04.png" alt=""> <p>Ploting signal with HCDFT with digital mimic filter</p><pre class="codeinput">figure5 = figure(5);
+
+plot(abs(P_HFOURIER_MIMIC));
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_05.png" alt=""> <h2>Phasor Estimation using Modified Cossine Filter<a name="46"></a></h2><p>Modified Cossine Filter Variables initialization</p><pre class="codeinput">Ntotal = length(Ia);
+P_MDC = ones(Ntotal,1);
+window = ones(N+1,1)*0.1;
+
+<span class="keyword">for</span> k = 1:Ntotal
+</pre><p>Signal windowing</p><pre class="codeinput">    <span class="keyword">for</span> j = 1:N
+        window(j) = window(j+1);
+    <span class="keyword">end</span>
+    window(N+1) = Ia(k);
+</pre><p>Computing the phasor</p><pre class="codeinput">    P_MDC(k) = MDC(window);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+
+<span class="comment">% Ploting the Phasor computed using modified cossine filter</span>
+
+figure6 = figure(6);
+
+plot(abs(P_MDC));
+snapnow;
+</pre><img vspace="5" hspace="5" src="phasorEstimationExample_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Phasor estimation example
+% In this example, the current phasor estimation is made with the FCDFT and
+% HCDFT with and without Mimic Filter, and with Modified Cossine Filter.
+% The main goal of this example is to show the DC exponential decay offset
+% effect in the phasor estimators.
+%
+
+%%
+% Load file with simulated fault, which contains current and voltage signals.
+file = load('SIMULATED_FAULT.dat');
+%%
+% Phase A current - $I_a$
+Ia = file(:,8);
+
+%%
+% time vector
+t = file(:,2);
+
+%% Anti-Aliasing Filter
+% To avoid aliasing effect, an analog anti-aliasing filter is used. The
+% analog filter used is the 2º order Butterworth with a 480 Hz cut-off
+% frequency for a 960 Hz sampling frequency.
+
+%
+%
+% Filter Data
+% $f_c$ - cut-off frequency
+fc = 480;
+order = 2;
+%%
+% Filter project with normal frequency
+[zerosNorm,polesNorm,gainNorm] = buttap(order);
+[numNorm,denNorm] = zp2tf(zerosNorm,polesNorm,gainNorm);
+%%
+% Readapt filter frequency
+[num,den] = lp2lp(numNorm,denNorm,2*pi*fc);
+%%
+% $I_a$ filtered
+Ia = lsim(tf(num,den),Ia,t);
+
+%% Sampling
+% The sampling frequency chosen is 960 Hz, giving 16 samples per cycle
+
+%%
+% f - Fundamental frequency in Hz
+
+f = 60;
+
+%%
+% Angular frequency in rad/s
+
+w = 2*pi*f;
+
+%%
+% T - Fundamental period in s
+
+T  = 1/f;
+
+%%
+% N - Samples per cycle
+
+N = 16;
+
+%%
+% $f_s$ - Sampling frequency in Hz
+
+fs = N*f;
+
+%%
+% discretization step in s
+
+dtd = 1/fs;
+
+%%
+% $N_{total}$ - Total samples
+
+Ntotal = length(t);
+
+%%
+% Step simulation in ms
+
+dt = 10e-6;
+
+
+%%
+%  Obtaining the step reason dividing the required sampling frequency by
+%  the step simulation
+
+p1 = round(dtd/dt);
+
+%%
+% Discret current
+Ia = Ia(1:p1:Ntotal,1);
+
+%%
+% Discrete time
+t  = t(1:p1:Ntotal);
+
+%%
+% Ploting the current
+
+figure1 = figure(1);
+plot(Ia);
+
+%% Phasor Estimation
+% For the phasor estimation, the sampled signal is windowing depending of
+% the phasor estimator. For each window, the phasor estimation is computed
+% along the signal length
+%
+%
+%
+%% FCDFT
+% Variables initialization
+
+Ntotal = length(Ia);
+P_FOURIER = ones(Ntotal,1);
+window = ones(N,1)*0.1;
+
+for k=1:Ntotal
+    %%
+    % Signal windowing
+    for j=1:N-1
+        window(j) = window(j+1);
+    end
+    window(N) = Ia(k);
+    %%
+    % Computing the phasor
+    P_FOURIER(k)= FCDFT(window);
+end
+
+
+
+
+
+
+
+%% FCDFT with MIMIC filter
+
+%%
+% Computing the digital mimic filter parameters for a time constant with 1
+% cycle
+
+cycles = 1;
+[K,taud] = mimicParameters(cycles);
+
+%%
+% Applying mimic filter in the signal
+%%
+% Variables initialization
+
+Ntotal = length(Ia);
+P_FOURIER_MIMIC = ones(Ntotal,1);
+
+for k=2:Ntotal
+    %%
+    % Mimic Filter usage
+    P_FOURIER_MIMIC(k) = K*((1+taud)*P_FOURIER(k) - taud*P_FOURIER(k-1));
+    
+end
+
+%%
+% Ploting signal with FCDFT
+
+figure2 = figure(2);
+
+plot(abs(P_FOURIER));
+
+%%
+% Ploting signal with FCDFT with mimic filter
+
+figure3 = figure(3);
+
+plot(abs(P_FOURIER_MIMIC));
+
+%% HCDFT
+
+Ntotal = length(Ia);
+P_HFOURIER = ones(Ntotal,1);
+window = ones(N,1)*0.1;
+
+for k=1:Ntotal
+    %%
+    % Signal windowing
+    for j=1:N-1
+        window(j) = window(j+1);
+    end
+    window(N) = Ia(k);
+    %%
+    % Computing the phasor
+    P_HFOURIER(k)= HCDFT(window);
+end
+
+
+
+%% HCDFT with MIMIC filter
+
+%%
+% Computing the digital mimic filter parameters for a time constant with 1
+% cycle
+
+cycles = 1;
+[K,taud] = mimicParameters(cycles);
+
+%%
+% Applying mimic filter in the signal
+%%
+% Variables initialization
+Ntotal = length(Ia);
+P_HFOURIER_MIMIC = ones(Ntotal,1);
+
+for k = 2:Ntotal
+    %%
+    % Mimic Filter usage
+    P_HFOURIER_MIMIC(k) = K*((1+taud)*P_HFOURIER(k) - taud*P_HFOURIER(k-1));
+    
+end
+
+%%
+% Ploting signal with HCDFT
+
+figure4 = figure(4);
+
+plot(abs(P_HFOURIER));
+
+%%
+% Ploting signal with HCDFT with digital mimic filter
+
+figure5 = figure(5);
+
+plot(abs(P_HFOURIER_MIMIC));
+
+%% Phasor Estimation using Modified Cossine Filter
+
+%% 
+% Modified Cossine Filter
+% Variables initialization
+Ntotal = length(Ia);
+P_MDC = ones(Ntotal,1);
+window = ones(N+1,1)*0.1;
+
+for k = 1:Ntotal
+    %%
+    % Signal windowing
+    for j = 1:N
+        window(j) = window(j+1);
+    end
+    window(N+1) = Ia(k);
+    %%
+    % Computing the phasor
+    P_MDC(k) = MDC(window);
+end
+
+% Ploting the Phasor computed using modified cossine filter
+
+figure6 = figure(6);
+
+plot(abs(P_MDC));
+snapnow;
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

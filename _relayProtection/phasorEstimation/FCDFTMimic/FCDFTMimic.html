@@ -1,0 +1,157 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>FCDFTMimic</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-04"><meta name="DC.source" content="FCDFTMimic.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Full cycle Fourier with mimic filter</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> Y=FCDFTMimic(window)
+</pre><h2>Full cycle Fourier with mimic filter<a name="2"></a></h2><p>The mimic filter usage avoids the DC exponential decay offset <a href="http://ieeexplore.ieee.org/xpl/login.jsp?tp=&amp;arnumber=400869&amp;url=http%3A%2F%2Fieeexplore.ieee.org%2Fiel3%2F61%2F9038%2F00400869.pdf%3Farnumber%3D400869">Digital Mimic Filter</a></p><pre class="codeinput"><span class="comment">% Time constant in cycles</span>
+tau = 1;
+<span class="comment">% Computes the gain and the time constant (unities) based in the time constant</span>
+<span class="comment">% (Cycles). It is assuming a unitary gain for 60 Hz</span>
+[K,taud] = mimicParameters(tau);
+<span class="comment">% Samples per cycle in 60 Hz signal</span>
+N = length(window)-1;
+
+<span class="comment">% The windows are separated in old and new</span>
+oldWindow = window(1:N);
+newWindow = window(2:N+1);
+
+<span class="comment">%   Algorithm variables</span>
+teta = 2*pi/N;
+XreOld = 0;
+XimOld = 0;
+XreNew = 0;
+XimNew = 0;
+
+<span class="keyword">for</span> m = 0:N-1
+    <span class="comment">%Real and Imaginary phasor computations with old window</span>
+    XreOld = XreOld + (2/N)*oldWindow(m+1)*cos(teta*m);
+    XimOld = XimOld - (2/N)*oldWindow(m+1)*sin(teta*m);
+
+    <span class="comment">%Real and Imaginary phasor computations with new window</span>
+    XreNew = XreNew + (2/N)*newWindow(m+1)*cos(teta*m);
+    XimNew = XimNew - (2/N)*newWindow(m+1)*sin(teta*m);
+<span class="keyword">end</span>
+
+<span class="comment">%   Phasor result with old window</span>
+XOld = complex(XreOld, XimOld);
+
+
+<span class="comment">%   Phasor result with new window</span>
+XNew = complex(XreNew, XimNew);
+
+<span class="comment">%   Digital mimic computation</span>
+Y = K*( (1+taud)*XNew - taud*XOld );
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function Y=FCDFTMimic(window)
+%% Full cycle Fourier with mimic filter
+% The mimic filter usage avoids the DC exponential decay offset 
+% <http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=400869&url=http%3A%2F%2Fieeexplore.ieee.org%2Fiel3%2F61%2F9038%2F00400869.pdf%3Farnumber%3D400869 Digital Mimic Filter>
+
+% Time constant in cycles
+tau = 1;
+% Computes the gain and the time constant (unities) based in the time constant
+% (Cycles). It is assuming a unitary gain for 60 Hz
+[K,taud] = mimicParameters(tau);
+% Samples per cycle in 60 Hz signal
+N = length(window)-1;
+
+% The windows are separated in old and new
+oldWindow = window(1:N);
+newWindow = window(2:N+1);
+
+%   Algorithm variables
+teta = 2*pi/N;
+XreOld = 0;
+XimOld = 0;
+XreNew = 0;
+XimNew = 0;
+
+for m = 0:N-1
+    %Real and Imaginary phasor computations with old window
+    XreOld = XreOld + (2/N)*oldWindow(m+1)*cos(teta*m);
+    XimOld = XimOld - (2/N)*oldWindow(m+1)*sin(teta*m);
+    
+    %Real and Imaginary phasor computations with new window
+    XreNew = XreNew + (2/N)*newWindow(m+1)*cos(teta*m);
+    XimNew = XimNew - (2/N)*newWindow(m+1)*sin(teta*m);    
+end
+
+%   Phasor result with old window
+XOld = complex(XreOld, XimOld);
+
+
+%   Phasor result with new window
+XNew = complex(XreNew, XimNew);
+
+%   Digital mimic computation
+Y = K*( (1+taud)*XNew - taud*XOld );
+
+
+
+##### SOURCE END #####
+--></body></html>

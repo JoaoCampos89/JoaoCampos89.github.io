@@ -22,3 +22,7 @@ ufcgUrl: http://www.ufcg.edu.br/
 linkedin: joaocampos89
 vitae:
 google_analytics: UA-69513336-1
+
+collections:
+  relayProtection:
+    output: true
