@@ -1,0 +1,305 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Mho</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-09"><meta name="DC.source" content="Mho.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Mho distance characteristic</a></li><li><a href="#5">Loop through  all values</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [T] = Mho(Z_mho,I,I2,V,Vpol,K0,K0M)
+</pre><h2>Mho distance characteristic<a name="2"></a></h2><p>Computes the mho distance characterist in phase-ground and phase-phase quantities. It can be used in parallel lines</p><p>Inputs:</p><p><img src="Mho_eq53927.png" alt="$Z_mho$"> - impedance range <img src="Mho_eq35427.png" alt="$I$"> - measured current in the protected line <img src="Mho_eq34462.png" alt="$I_2$"> - measured current in the parallel line to the protected <img src="Mho_eq20021.png" alt="$V$"> - measured voltage in protected line <img src="Mho_eq45126.png" alt="$Vpol$"> - polarization  voltage <img src="Mho_eq16303.png" alt="$K_0$"> - self zero compensation <img src="Mho_eq97045.png" alt="$K_{0M}$"> - mutual zero compensation</p><p>Outputs: <img src="Mho_eq57315.png" alt="$T$"> - Torque</p><p>Assigning inputs</p><pre class="codeinput">Va=V(:,1);
+Vb=V(:,2);
+Vc=V(:,3);
+Va_res=Vpol(:,1);
+Vb_res=Vpol(:,2);
+Vc_res=Vpol(:,3);
+Ia=I(:,1);
+Ib=I(:,2);
+Ic=I(:,3);
+Ia2=I2(:,1);
+Ib2=I2(:,2);
+Ic2=I2(:,3);
+</pre><p>Initializing all variables</p><pre class="codeinput">I0=zeros(length(I(:,1)),1);
+I02=zeros(length(I(:,1)),1);
+Vab=zeros(length(I(:,1)),1);
+Vbc=zeros(length(I(:,1)),1);
+Vca=zeros(length(I(:,1)),1);
+Iab=zeros(length(I(:,1)),1);
+Ibc=zeros(length(I(:,1)),1);
+Ica=zeros(length(I(:,1)),1);
+Vab_res=zeros(length(I(:,1)),1);
+Vbc_res=zeros(length(I(:,1)),1);
+Vca_res=zeros(length(I(:,1)),1);
+
+
+Ta_op=zeros(length(I(:,1)),1);
+Tb_op=zeros(length(I(:,1)),1);
+Tc_op=zeros(length(I(:,1)),1);
+Tab_op=zeros(length(I(:,1)),1);
+Tbc_op=zeros(length(I(:,1)),1);
+Tca_op=zeros(length(I(:,1)),1);
+
+
+Ta_res=zeros(length(I(:,1)),1);
+Tb_res=zeros(length(I(:,1)),1);
+Tc_res=zeros(length(I(:,1)),1);
+Tab_res=zeros(length(I(:,1)),1);
+Tbc_res=zeros(length(I(:,1)),1);
+Tca_res=zeros(length(I(:,1)),1);
+
+Ta=zeros(length(I(:,1)),1);
+Tb=zeros(length(I(:,1)),1);
+Tc=zeros(length(I(:,1)),1);
+Tab=zeros(length(I(:,1)),1);
+Tbc=zeros(length(I(:,1)),1);
+Tca=zeros(length(I(:,1)),1);
+</pre><h2>Loop through  all values<a name="5"></a></h2><pre class="codeinput"><span class="keyword">for</span> k = 1:length(I(:,1))
+</pre><p><img src="Mho_eq00068.png" alt="$I_0$"> - self-zero sequence current <img src="Mho_eq65631.png" alt="$I0_2$"> - zero sequence current of the parallel line</p><pre class="codeinput">I0(k) = (Ia(k)+Ib(k)+Ic(k))/3;
+I02(k) = (Ia2(k)+Ib2(k)+Ic2(k))/3;
+</pre><p>Phase-Phase voltage and current computation</p><pre class="codeinput">Vab(k)= Va(k)-Vb(k);
+Vbc(k)= Vb(k)-Vc(k);
+Vca(k)= Vc(k)-Va(k);
+
+Iab(k)= Ia(k)-Ib(k);
+Ibc(k)= Ib(k)-Ic(k);
+Ica(k)= Ic(k)-Ia(k);
+</pre><p>Phase-Phase voltage restriction computation</p><pre class="codeinput">Vab_res(k) = Va_res(k)-Vb_res(k);
+Vbc_res(k) = Vb_res(k)-Vc_res(k);
+Vca_res(k) = Vc_res(k)-Va_res(k);
+</pre><p>Operation torque calculation phase-ground and phase-phase</p><pre class="codeinput">Ta_op(k) = Ia(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Va(k);
+Tb_op(k) = Ib(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Vb(k);
+Tc_op(k) = Ic(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Vc(k);
+
+Tab_op(k) = Iab(k)*Z_mho-Vab(k);
+Tbc_op(k) = Ibc(k)*Z_mho-Vbc(k);
+Tca_op(k) = Ica(k)*Z_mho-Vca(k);
+</pre><p>Restriction torque calculation phase-ground and phase-phase</p><pre class="codeinput">Ta_res(k) = Va_res(k);
+Tb_res(k) = Vb_res(k);
+Tc_res(k) = Vc_res(k);
+
+Tab_res(k) = Vab_res(k);
+Tbc_res(k) = Vbc_res(k);
+Tca_res(k) = Vca_res(k);
+</pre><p>Torque calculation</p><pre class="codeinput">Ta(k) = Ta_op(k)*conj(Ta_res(k));
+Tb(k) = Tb_op(k)*conj(Tb_res(k));
+Tc(k) = Tc_op(k)*conj(Tc_res(k));
+
+Tab(k) = Tab_op(k)*conj(Tab_res(k));
+Tbc(k) = Tbc_op(k)*conj(Tbc_res(k));
+Tca(k) = Tca_op(k)*conj(Tca_res(k));
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p>Returning a  vector T with all computed torques</p><pre class="codeinput">T(:,1) = Ta;
+T(:,2) = Tb;
+T(:,3) = Tc;
+T(:,4) = Tab;
+T(:,5) = Tbc;
+T(:,6) = Tca;
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [T] = Mho(Z_mho,I,I2,V,Vpol,K0,K0M)
+%% Mho distance characteristic 
+% Computes the mho distance characterist in phase-ground and phase-phase
+% quantities. It can be used in parallel lines
+%
+% Inputs:
+%
+% $Z_mho$ - impedance range
+% $I$ - measured current in the protected line
+% $I_2$ - measured current in the parallel line to the protected
+% $V$ - measured voltage in protected line
+% $Vpol$ - polarization  voltage
+% $K_0$ - self zero compensation
+% $K_{0M}$ - mutual zero compensation
+%
+% Outputs:
+% $T$ - Torque  
+
+%%
+% Assigning inputs
+
+Va=V(:,1);
+Vb=V(:,2);
+Vc=V(:,3);
+Va_res=Vpol(:,1);
+Vb_res=Vpol(:,2);
+Vc_res=Vpol(:,3);
+Ia=I(:,1);
+Ib=I(:,2);
+Ic=I(:,3);
+Ia2=I2(:,1);
+Ib2=I2(:,2);
+Ic2=I2(:,3);
+%%
+% Initializing all variables
+
+I0=zeros(length(I(:,1)),1);
+I02=zeros(length(I(:,1)),1);
+Vab=zeros(length(I(:,1)),1);
+Vbc=zeros(length(I(:,1)),1);
+Vca=zeros(length(I(:,1)),1);
+Iab=zeros(length(I(:,1)),1);
+Ibc=zeros(length(I(:,1)),1);
+Ica=zeros(length(I(:,1)),1);
+Vab_res=zeros(length(I(:,1)),1);
+Vbc_res=zeros(length(I(:,1)),1);
+Vca_res=zeros(length(I(:,1)),1);
+
+
+Ta_op=zeros(length(I(:,1)),1);
+Tb_op=zeros(length(I(:,1)),1);
+Tc_op=zeros(length(I(:,1)),1);
+Tab_op=zeros(length(I(:,1)),1);
+Tbc_op=zeros(length(I(:,1)),1);
+Tca_op=zeros(length(I(:,1)),1);
+
+
+Ta_res=zeros(length(I(:,1)),1);
+Tb_res=zeros(length(I(:,1)),1);
+Tc_res=zeros(length(I(:,1)),1);
+Tab_res=zeros(length(I(:,1)),1);
+Tbc_res=zeros(length(I(:,1)),1);
+Tca_res=zeros(length(I(:,1)),1);
+
+Ta=zeros(length(I(:,1)),1);
+Tb=zeros(length(I(:,1)),1);
+Tc=zeros(length(I(:,1)),1);
+Tab=zeros(length(I(:,1)),1);
+Tbc=zeros(length(I(:,1)),1);
+Tca=zeros(length(I(:,1)),1);
+
+
+%% Loop through  all values
+for k = 1:length(I(:,1))
+%%
+% $I_0$ - self-zero sequence current
+% $I0_2$ - zero sequence current of the parallel line  
+I0(k) = (Ia(k)+Ib(k)+Ic(k))/3;
+I02(k) = (Ia2(k)+Ib2(k)+Ic2(k))/3;
+
+%%
+% Phase-Phase voltage and current computation
+
+Vab(k)= Va(k)-Vb(k);
+Vbc(k)= Vb(k)-Vc(k);
+Vca(k)= Vc(k)-Va(k);
+
+Iab(k)= Ia(k)-Ib(k);
+Ibc(k)= Ib(k)-Ic(k);
+Ica(k)= Ic(k)-Ia(k);
+
+%%
+% Phase-Phase voltage restriction computation
+Vab_res(k) = Va_res(k)-Vb_res(k);
+Vbc_res(k) = Vb_res(k)-Vc_res(k);
+Vca_res(k) = Vc_res(k)-Va_res(k);
+
+
+%%
+% Operation torque calculation phase-ground and phase-phase  
+Ta_op(k) = Ia(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Va(k);
+Tb_op(k) = Ib(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Vb(k);
+Tc_op(k) = Ic(k)*Z_mho+I0(k)*K0*Z_mho+I02(k)*K0M*Z_mho-Vc(k);
+
+Tab_op(k) = Iab(k)*Z_mho-Vab(k);
+Tbc_op(k) = Ibc(k)*Z_mho-Vbc(k);
+Tca_op(k) = Ica(k)*Z_mho-Vca(k);
+
+%%
+% Restriction torque calculation phase-ground and phase-phase  
+Ta_res(k) = Va_res(k);
+Tb_res(k) = Vb_res(k);
+Tc_res(k) = Vc_res(k);
+
+Tab_res(k) = Vab_res(k);
+Tbc_res(k) = Vbc_res(k);
+Tca_res(k) = Vca_res(k);
+
+%%
+% Torque calculation 
+
+Ta(k) = Ta_op(k)*conj(Ta_res(k));
+Tb(k) = Tb_op(k)*conj(Tb_res(k));
+Tc(k) = Tc_op(k)*conj(Tc_res(k));
+
+Tab(k) = Tab_op(k)*conj(Tab_res(k));
+Tbc(k) = Tbc_op(k)*conj(Tbc_res(k));
+Tca(k) = Tca_op(k)*conj(Tca_res(k));
+
+
+
+end
+
+%%
+% Returning a  vector T with all computed torques
+T(:,1) = Ta;
+T(:,2) = Tb;
+T(:,3) = Tc;
+T(:,4) = Tab;
+T(:,5) = Tbc;
+T(:,6) = Tca;
+end
+
+
+##### SOURCE END #####
+--></body></html>
